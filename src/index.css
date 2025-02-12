@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  /* height: 100%; */
+  margin: 0;
+  transition: background 0.3s ease, color 0.3s ease; 
+}
+
+body {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.dark {
+  background: #000;
+  color: #fff;
+}
+
+
+.dark .bg-img {
+  background-image: url("../src/assets/bg-img5.png");
+}
+
+.light {
+  background-image: url("../src/assets/light.jpeg");
+/*  background: linear-gradient(to bottom, #DAE2F8, #D6A4A4); */
+background-repeat: no-repeat;
+background-size: cover;
+  color: #000;
+}
+
+.light h1, 
+.light h2, 
+.light h3, 
+.light h4, 
+.light h5, 
+.light h6, 
+.light p, 
+.light a,
+.light span,
+.light button,
+.light ::placeholder,
+.light input,
+.light textarea
+{
+  color: #000 !important;
+}
+
+.light #l{
+  color: #fff !important;
+}
+.light .req{ 
+  color: red !important;
+}
+
+/* Ensure hover styles are preserved in both themes */
+.navbar-links a:hover {
+  color: #facc15; /* Yellow */
+}
+
+#logo:hover {
+  color: #ef4444; /* Red */
+}
+
+.social-icons a:hover {
+  opacity: 0.8;
+}
+
+button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Remove forced black text in light mode */
+.light a:hover,
+.light button:hover,
+.light .social-icons a:hover {
+  color: inherit !important;
+}
+
+.light #logo:hover {
+  color: #ef4444 !important; /* Keep red hover effect */
+}
+
+.light .navbar-links a:hover {
+  color: #facc15 !important; /* Keep yellow hover effect */
+}
+
+.social-icons a {
+  transition: color 0.3s ease-in-out;
+}
+
+.social-icons a.hover\:text-indigo-500:hover {
+  color: #6366f1 !important;
+}
+
+.social-icons a.hover\:text-pink-500:hover {
+  color: #ec4899 !important;
+}
+
+.social-icons a.hover\:text-gray-400:hover {
+  color: #9ca3af !important;
+}
+
+.social-icons a.hover\:text-blue-500:hover {
+  color: #3b82f6 !important;
+}
+
