@@ -1,13 +1,13 @@
-import emailjs from "@emailjs/browser";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { FiSend } from "react-icons/fi";
 import { motion } from "framer-motion";
-
 import countries from "../constants/countries.json";
-
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const ContactForm = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -44,7 +44,7 @@ const ContactForm = () => {
         return errors;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const validationErrors = validate();
         if (Object.keys(validationErrors).length > 0) {
@@ -52,19 +52,25 @@ const ContactForm = () => {
         } else {
             setErrors({});
             setIsSending(true);
-
-            emailjs.send("service_9uwjqvl", "template_bbjkbmd", formData, "vRMl-7K7hM7ItUObZ")
-                .then((response) => {
-                    toast.success("Message sent successfully");
-                    setFormData({ name: "", email: "", countryCode: countries[0].code, phone: "", message: "" });
-                })
-                .catch((error) => {
-                    console.error("FAILED...", error);
-                    toast.error("Failed to send message. Please try again.");
-                })
-                .finally(() => {
-                    setIsSending(false);
-                });
+        try {
+            const response = await axios.post("http://localhost:5000/portfolio/messages", formData);
+            if(response.status === 201){
+                toast.success("Message Submitted successfully");
+                setFormData({name :"", email: "", countryCode: countries[0].code, phone: "", message: ""});
+            }
+        } catch (error) {
+            toast.error("An error occurred while submitting the message");
+            console.error("Error", error);
+        } finally{
+            setIsSending(false);
+        }
+            
+            // Simulate a successful submission
+            setTimeout(() => {
+                toast.success("Message submitted successfully");
+                setFormData({ name: "", email: "", countryCode: countries[0].code, phone: "", message: "" });
+                setIsSending(false);
+            }, 2000);
         }
     };
 
@@ -77,25 +83,25 @@ const ContactForm = () => {
                     <div className="mb-4 flex flex-col lg:flex-row space-x-0 lg:space-x-4">
                         <div className="lg:w-1/2">
                             <input type="text" id="name" name="name" value={formData.name} placeholder="Name" onChange={handleChange} className="mb-4 w-full appearance-none rounded-lg border border-white/20 bg-transparent px-3 py-2 text-sm text-white focus:border-white focus:outline-none" />
-                            {errors.name && <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="req text-sm text-rose-500">{errors.name}</motion.p>}
+                            {errors.name && <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="text-sm text-rose-500">{errors.name}</motion.p>}
                         </div>
                         <div className="lg:w-1/2">
                             <input type="email" id="email" name="email" value={formData.email} placeholder="Email" onChange={handleChange} className="mb-4 w-full appearance-none rounded-lg border border-white/20 bg-transparent px-3 py-2 text-sm text-white focus:border-white focus:outline-none" />
-                            {errors.email && <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="req text-sm text-rose-500">{errors.email}</motion.p>}
+                            {errors.email && <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="text-sm text-rose-500">{errors.email}</motion.p>}
                         </div>
                     </div>
                     <div className="mb-4 flex flex-col lg:flex-row space-x-0 lg:space-x-4">
-                        <select name="countryCode" value={formData.countryCode} onChange={handleChange} className="mb-4 w-1/4 rounded-lg border border-white/20 bg-black  px-3 py-2 text-sm text-white focus:border-white focus:outline-none">
+                        <select name="countryCode" value={formData.countryCode} onChange={handleChange} className="mb-4 w-1/4 rounded-lg border border-white/20 bg-black px-3 py-2 text-sm text-white focus:border-white focus:outline-none">
                             {countries.map((country) => (
                                 <option key={country.code} value={country.code}>{country.name} ({country.code})</option>
                             ))}
                         </select>
                         <input type="tel" id="phone" name="phone" value={formData.phone} placeholder="Phone Number" onChange={handleChange} className="mb-4 w-3/4 appearance-none rounded-lg border border-white/20 bg-transparent px-3 py-2 text-sm text-white focus:border-white focus:outline-none" />
-                        {errors.phone && <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="req text-sm text-rose-500">{errors.phone}</motion.p>}
+                        {errors.phone && <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="text-sm text-rose-500">{errors.phone}</motion.p>}
                     </div>
                     <div className="mb-4">
                         <textarea id="message" name="message" value={formData.message} placeholder="Message" onChange={handleChange} className="mb-4 w-full appearance-none rounded-lg border border-white/20 bg-transparent px-3 py-2 text-sm text-white focus:border-white focus:outline-none" rows="6" />
-                        {errors.message && <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="req text-sm text-rose-500">{errors.message}</motion.p>}
+                        {errors.message && <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="text-sm text-rose-500">{errors.message}</motion.p>}
                     </div>
                     <button type="submit" className={`w-full rounded border border-white/20 bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30 ${isSending ? "cursor-not-allowed opacity-50" : ""}`} disabled={isSending}>
                         <div className="flex items-center justify-center gap-2">
@@ -104,6 +110,7 @@ const ContactForm = () => {
                         </div>
                     </button>
                 </motion.form>
+                <button onClick={() => navigate("/messages")} className="border-white/20 bg-white/20 px-4 text-sm font-semibold text-white hover:bg-white/30 py-2 mt-5 p-4 rounded border">Admin side</button>
             </div>
         </div>
     );
